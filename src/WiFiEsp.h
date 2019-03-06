@@ -229,7 +229,7 @@ public:
 	* param enc: encryption type (enum wl_enc_type)
 	* param apOnly: Set to false if you want to run AP and Station modes simultaneously
 	*/
-	int beginAP(const char* ssid, uint8_t channel, const char* pwd, uint8_t enc, bool apOnly=true);
+	int beginAP(const char* ssid, uint8_t channel, const char* pwd, uint8_t enc, wl_visibility_t visibility, bool apOnly=true);
 
 	/*
 	* Start the ESP access point with open security.

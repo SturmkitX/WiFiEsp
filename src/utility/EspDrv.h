@@ -113,6 +113,11 @@ enum wl_tcp_state {
 	TIME_WAIT   = 10
 };
 
+typedef enum {
+    BROADCAST   = 0,
+    HIDDEN      = 1
+} wl_visibility_t;
+
 
 
 class EspDrv
@@ -132,9 +137,9 @@ public:
 
 
     /*
-	* Start the Access Point
+	* Start the Access Point (can be reused to reconfig an AP)
 	*/
-	static bool wifiStartAP(const char* ssid, const char* pwd, uint8_t channel, uint8_t enc, uint8_t espMode);
+	static bool wifiConfigAP(const char* ssid, const char* pwd, uint8_t channel, uint8_t enc, uint8_t espMode, wl_visibility_t visibility);
 
 
     /*

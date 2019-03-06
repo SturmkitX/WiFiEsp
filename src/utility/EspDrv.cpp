@@ -170,9 +170,9 @@ bool EspDrv::wifiConnect(const char* ssid, const char* passphrase)
 }
 
 
-bool EspDrv::wifiStartAP(const char* ssid, const char* pwd, uint8_t channel, uint8_t enc, uint8_t espMode)
+bool EspDrv::wifiConfigAP(const char* ssid, const char* pwd, uint8_t channel, uint8_t enc, uint8_t espMode, wl_visibility_t visibility)
 {
-	LOGDEBUG(F("> wifiStartAP"));
+	LOGDEBUG(F("> wifiConfigAP"));
 
 	// set AP mode, use CUR mode to avoid automatic start at boot
     int ret = sendCmd(F("AT+CWMODE_CUR=%d"), 10000, espMode);
@@ -187,11 +187,13 @@ bool EspDrv::wifiStartAP(const char* ssid, const char* pwd, uint8_t channel, uin
 	// any special characters (',', '"' and '/')
 
 	// start access point
-	ret = sendCmd(F("AT+CWSAP_CUR=\"%s\",\"%s\",%d,%d"), 10000, ssid, pwd, channel, enc);
+	// 8 is the max number of active connections
+	ret = sendCmd(F("AT+CWSAP_CUR=\"%s\",\"%s\",%d,%d,4,%d"), 10000, ssid, pwd, channel, enc, visibility);
 
 	if (ret!=TAG_OK)
 	{
 		LOGWARN1(F("Failed to start AP"), ssid);
+		LOGWARN1(F("AP Fail Code"), ret);
 		return false;
 	}
 	
@@ -1109,7 +1111,7 @@ void EspDrv::espEmptyBuf(bool warn)
 // copied from Serial::timedRead
 int EspDrv::timedRead()
 {
-  unsigned int _timeout = 1000;
+  unsigned int _timeout = 2000;
   int c;
   long _startMillis = millis();
   do
