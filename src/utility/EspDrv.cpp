@@ -52,6 +52,7 @@ RingBuffer EspDrv::ringBuf(32);
 char 	EspDrv::_networkSsid[][WL_SSID_MAX_LENGTH] = {{"1"},{"2"},{"3"},{"4"},{"5"}};
 int32_t EspDrv::_networkRssi[WL_NETWORKS_LIST_MAXNUM] = { 0 };
 uint8_t EspDrv::_networkEncr[WL_NETWORKS_LIST_MAXNUM] = { 0 };
+char	EspDrv::_networkBSsid[][WL_BSSID_MAX_LENGTH] = { "" };
 
 // Cached values of retrieved data
 char EspDrv::_ssid[] = {0};
@@ -468,6 +469,9 @@ uint8_t EspDrv::getScanNetworks()
 	LOGDEBUG(F("----------------------------------------------"));
 	LOGDEBUG(F(">> AT+CWLAP"));
 	
+	espSerial->println(F("AT+CWLAPOPT=1,15"));
+	delay(1000);
+	espEmptyBuf();
 	espSerial->println(F("AT+CWLAP"));
 	
 	idx = readUntil(10000, "+CWLAP:(");
@@ -490,6 +494,16 @@ uint8_t EspDrv::getScanNetworks()
 		readUntil(1000, ",");
 		
 		_networkRssi[ssidListNum] = espSerial->parseInt();
+
+		// discard , and " characters
+		readUntil(1000, "\"");
+
+		idx = readUntil(1000, "\"", false);
+		if(idx==NUMESPTAGS)
+		{
+			memset(_networkBSsid[ssidListNum], 0, WL_BSSID_MAX_LENGTH );
+			ringBuf.getStrN(_networkBSsid[ssidListNum], 1, WL_BSSID_MAX_LENGTH-1);
+		}
 		
 		idx = readUntil(1000, "+CWLAP:(");
 
@@ -540,6 +554,14 @@ char* EspDrv::getSSIDNetworks(uint8_t networkItem)
 		return NULL;
 
 	return _networkSsid[networkItem];
+}
+
+char* EspDrv::getBSSIDNetworks(uint8_t networkItem)
+{
+	if (networkItem >= WL_NETWORKS_LIST_MAXNUM)
+		return NULL;
+
+	return _networkBSsid[networkItem];
 }
 
 uint8_t EspDrv::getEncTypeNetworks(uint8_t networkItem)

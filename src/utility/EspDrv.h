@@ -29,6 +29,7 @@ along with The Arduino WiFiEsp library.  If not, see
 
 // Maximum size of a SSID
 #define WL_SSID_MAX_LENGTH 32
+#define WL_BSSID_MAX_LENGTH 18
 
 // Size of a MAC-address or BSSID
 #define WL_MAC_ADDR_LENGTH 6
@@ -37,7 +38,7 @@ along with The Arduino WiFiEsp library.  If not, see
 #define WL_IPV4_LENGTH 4
 
 // Maximum size of a SSID list
-#define WL_NETWORKS_LIST_MAXNUM	10
+#define WL_NETWORKS_LIST_MAXNUM	25
 
 // Maxmium number of socket
 #define	MAX_SOCK_NUM		4
@@ -237,6 +238,7 @@ public:
      * return: ssid string of the specified item on the networks scanned list
      */
     static char* getSSIDNetworks(uint8_t networkItem);
+    static char* getBSSIDNetworks(uint8_t networkItem);
 
     /*
      * Return the RSSI of the networks discovered during the scanNetworks
@@ -307,6 +309,7 @@ private:
 	static char 	_networkSsid[WL_NETWORKS_LIST_MAXNUM][WL_SSID_MAX_LENGTH];
 	static int32_t 	_networkRssi[WL_NETWORKS_LIST_MAXNUM];
 	static uint8_t 	_networkEncr[WL_NETWORKS_LIST_MAXNUM];
+    static char     _networkBSsid[WL_NETWORKS_LIST_MAXNUM][WL_BSSID_MAX_LENGTH];
 
 
 	// settings of current selected network
